@@ -15,6 +15,7 @@ fun SatelliteDetailScreen(
     viewModel: SatelliteDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val currentPosition by viewModel.currentPosition.collectAsState()
     
     LaunchedEffect(satelliteId) {
         viewModel.loadSatelliteDetail(satelliteId)
@@ -42,22 +43,28 @@ fun SatelliteDetailScreen(
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold
                     )
+
+                    Spacer(modifier = Modifier.height(32.dp))
                     
                     // Height/Mass
                     Text(
                         text = "Height/Mass:${currentState.data.heightMass}",
                         style = MaterialTheme.typography.bodyLarge
                     )
-                    
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     // Cost
                     Text(
                         text = "Cost:${currentState.data.cost}",
                         style = MaterialTheme.typography.bodyLarge
                     )
-                    
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     // Last Position
                     Text(
-                        text = "Last Position: ${currentState.data.lastPosition}",
+                        text = "Last Position: ${currentPosition?.let { "(${it.posX},${it.posY})" } ?: "Loading..."}",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
