@@ -4,8 +4,10 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.omerfarukcelik.challenge.data.model.Satellite
+import com.omerfarukcelik.challenge.data.model.SatelliteDetail
 import com.omerfarukcelik.challenge.data.model.toDomain
 import com.omerfarukcelik.challenge.domain.model.SatelliteDomainModel
+import com.omerfarukcelik.challenge.domain.model.SatelliteDetailDomainModel
 import com.omerfarukcelik.challenge.domain.repository.ISatelliteRepository as InterfaceSatelliteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -29,6 +31,20 @@ class SatelliteRepositoryImpl @Inject constructor(
             satellites.toDomain()
         } catch (e: IOException) {
             emptyList()
+        }
+    }
+
+    override suspend fun getSatelliteDetail(satelliteId: Int): SatelliteDetailDomainModel? = withContext(Dispatchers.IO) {
+        try {
+            val jsonString = context.assets.open("satellites-detail.json")
+                .bufferedReader()
+                .use { it.readText() }
+
+            val listType = object : TypeToken<List<SatelliteDetail>>() {}.type
+            val satelliteDetails: List<SatelliteDetail> = Gson().fromJson(jsonString, listType)
+            satelliteDetails.find { it.id == satelliteId }?.toDomain()
+        } catch (e: IOException) {
+            null
         }
     }
 }

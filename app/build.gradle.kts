@@ -59,6 +59,9 @@ dependencies {
     ksp(libs.hiltCompiler)
     implementation(libs.androidxHiltNavigationCompose)
     
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+    
     // Retrofit & OkHttp
     implementation(libs.retrofit)
     implementation(libs.retrofitGson)

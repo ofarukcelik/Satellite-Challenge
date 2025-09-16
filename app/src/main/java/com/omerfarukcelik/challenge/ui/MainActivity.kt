@@ -12,7 +12,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.omerfarukcelik.challenge.navigation.SatelliteRoutes
+import com.omerfarukcelik.challenge.ui.satellite_detail.SatelliteDetailScreen
 import com.omerfarukcelik.challenge.ui.satellite_list.SatelliteListScreen
 import com.omerfarukcelik.challenge.ui.theme.ChallengeTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,20 +33,48 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChallengeTheme {
                 Surface(
-                    modifier = Modifier.Companion.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    val navController = rememberNavController()
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
+                    
                     Scaffold(
-                        modifier = Modifier.Companion.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         topBar = {
                             TopAppBar(
-                                title = { Text("Satellites") }
+                                title = { 
+                                    Text(
+                                        when {
+                                            currentRoute?.startsWith("satellite_detail") == true -> "Satellite Detail"
+                                            else -> "Satellites"
+                                        }
+                                    )
+                                }
                             )
                         }
                     ) { innerPadding ->
-                        SatelliteListScreen(
-                            modifier = Modifier.Companion.padding(innerPadding)
-                        )
+                        NavHost(
+                            navController = navController,
+                            startDestination = SatelliteRoutes.SATELLITE_LIST,
+                            modifier = Modifier.padding(innerPadding)
+                        ) {
+                            composable(SatelliteRoutes.SATELLITE_LIST) {
+                                SatelliteListScreen(
+                                    onSatelliteClick = { satelliteId ->
+                                        navController.navigate(
+                                            SatelliteRoutes.createSatelliteDetailRoute(satelliteId)
+                                        )
+                                    }
+                                )
+                            }
+                            
+                            composable(SatelliteRoutes.SATELLITE_DETAIL) { backStackEntry ->
+                                val satelliteId = backStackEntry.arguments?.getString("satelliteId")?.toIntOrNull() ?: 0
+                                SatelliteDetailScreen(satelliteId = satelliteId)
+                            }
+                        }
                     }
                 }
             }

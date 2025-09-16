@@ -1,6 +1,7 @@
 package com.omerfarukcelik.challenge.ui.satellite_list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,6 +21,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 @Composable
 fun SatelliteListScreen(
     modifier: Modifier = Modifier,
+    onSatelliteClick: (Int) -> Unit = {},
     viewModel: SatelliteViewModel = hiltViewModel()
 ) {
     val filteredSatellites by viewModel.filteredSatellites.collectAsState()
@@ -58,13 +60,16 @@ fun SatelliteListScreen(
             is StatusIO.Empty -> { EmptyState(searchQuery = searchQuery) }
 
             is StatusIO.Success -> {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(0.dp)
-                ) {
-                    items(filteredSatellites) { satellite ->
-                        SatelliteListItem(satellite = satellite)
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(0.dp)
+                    ) {
+                        items(filteredSatellites) { satellite ->
+                            SatelliteListItem(
+                                satellite = satellite,
+                                onClick = { onSatelliteClick(satellite.id) }
+                            )
+                        }
                     }
-                }
             }
         }
     }
@@ -112,41 +117,47 @@ private fun EmptyState(searchQuery: String) {
 }
 
 @Composable
-fun SatelliteListItem(satellite: SatelliteUIModel) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Status indicator dot
-        Box(
+fun SatelliteListItem(
+    satellite: SatelliteUIModel,
+    onClick: () -> Unit
+) {
+    Column {
+        Row(
             modifier = Modifier
-                .size(12.dp)
-                .clip(CircleShape)
-                .background(Color(satellite.statusColor))
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // Satellite info
-        Column {
-            Text(
-                text = satellite.name,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
+                .fillMaxWidth()
+                .clickable { onClick() }
+                .padding(vertical = 12.dp, horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Status indicator dot
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .clip(CircleShape)
+                    .background(Color(satellite.statusColor))
             )
-            Text(
-                text = satellite.statusText,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Satellite info
+            Column {
+                Text(
+                    text = satellite.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = satellite.statusText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
-    }
 
-    // Divider line
-    HorizontalDivider(
-        modifier = Modifier.padding(start = 44.dp),
-        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-    )
+        // Divider line
+        HorizontalDivider(
+            modifier = Modifier.padding(start = 44.dp),
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+        )
+    }
 }

@@ -1,6 +1,7 @@
 [
   {
     "id": 1,
+    "name": "Starship-1",
     "cost_per_launch": 7200000,
     "first_flight": "2021-12-01",
     "height": 118,
@@ -8,6 +9,7 @@
   },
   {
     "id": 2,
+    "name": "Dragon-1",
     "cost_per_launch": 8300000,
     "first_flight": "2020-10-03",
     "height": 110,
@@ -15,6 +17,7 @@
   },
   {
     "id": 3,
+    "name": "Starship-3",
     "cost_per_launch": 6000000,
     "first_flight": "2019-09-14",
     "height": 132,
