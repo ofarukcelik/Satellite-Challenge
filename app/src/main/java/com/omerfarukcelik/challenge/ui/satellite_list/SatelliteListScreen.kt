@@ -24,8 +24,7 @@ fun SatelliteListScreen(
     onSatelliteClick: (Int) -> Unit = {},
     viewModel: SatelliteViewModel = hiltViewModel()
 ) {
-    val filteredSatellites by viewModel.filteredSatellites.collectAsState()
-    val satellitesStatus by viewModel.satellitesStatus.collectAsState()
+    val satelliteUIState by viewModel.satelliteUIState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
     Column(
@@ -52,18 +51,18 @@ fun SatelliteListScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        when (satellitesStatus) {
-            is StatusIO.Loading -> { LoadingState() }
+        when (val currentState = satelliteUIState) {
+            is SatelliteUIState.Loading -> { LoadingState() }
 
-            is StatusIO.Error -> { ErrorState() }
+            is SatelliteUIState.Error -> { ErrorState() }
 
-            is StatusIO.Empty -> { EmptyState(searchQuery = searchQuery) }
+            is SatelliteUIState.Empty -> { EmptyState(searchQuery = searchQuery) }
 
-            is StatusIO.Success -> {
+            is SatelliteUIState.LoadData -> {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(0.dp)
                     ) {
-                        items(filteredSatellites) { satellite ->
+                        items(currentState.satellites) { satellite ->
                             SatelliteListItem(
                                 satellite = satellite,
                                 onClick = { onSatelliteClick(satellite.id) }

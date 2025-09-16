@@ -11,7 +11,6 @@ class GetSatellitePositionsUseCase @Inject constructor(
     private val repository: ISatelliteRepository
 ) {
     operator fun invoke(satelliteId: Int): Flow<PositionDomainModel> = flow {
-        // Get all positions for the satellite once
         val positions = repository.getSatellitePositions(satelliteId)
         
         positions.forEach { position ->

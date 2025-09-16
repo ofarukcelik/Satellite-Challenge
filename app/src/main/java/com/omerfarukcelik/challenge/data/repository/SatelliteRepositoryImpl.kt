@@ -8,29 +8,27 @@ import com.omerfarukcelik.challenge.data.local.mapper.toDomain
 import com.omerfarukcelik.challenge.data.local.mapper.toEntity
 import com.omerfarukcelik.challenge.data.model.Satellite
 import com.omerfarukcelik.challenge.data.model.SatelliteDetail
-import com.omerfarukcelik.challenge.data.model.Position
 import com.omerfarukcelik.challenge.data.model.PositionResponse
 import com.omerfarukcelik.challenge.data.model.toDomain as modelToDomain
 import com.omerfarukcelik.challenge.domain.model.SatelliteDomainModel
 import com.omerfarukcelik.challenge.domain.model.SatelliteDetailDomainModel
 import com.omerfarukcelik.challenge.domain.model.PositionDomainModel
 import com.omerfarukcelik.challenge.domain.repository.ISatelliteRepository as InterfaceSatelliteRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.omerfarukcelik.challenge.di.IoDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 
 @Singleton
 class SatelliteRepositoryImpl @Inject constructor(
     private val context: Context,
-    private val satelliteDetailDao: SatelliteDetailDao
+    private val satelliteDetailDao: SatelliteDetailDao,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : InterfaceSatelliteRepository {
 
-    override suspend fun getSatellites(): List<SatelliteDomainModel> = withContext(Dispatchers.IO) {
+    override suspend fun getSatellites(): List<SatelliteDomainModel> = withContext(ioDispatcher) {
         try {
             val jsonString = context.assets.open("satellites.json")
                 .bufferedReader()
@@ -44,14 +42,12 @@ class SatelliteRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getSatelliteDetail(satelliteId: Int): SatelliteDetailDomainModel? = withContext(Dispatchers.IO) {
-        // Check if data is cached
+    override suspend fun getSatelliteDetail(satelliteId: Int): SatelliteDetailDomainModel? = withContext(ioDispatcher) {
         val cachedDetail = satelliteDetailDao.getSatelliteDetail(satelliteId)
         if (cachedDetail != null) {
             return@withContext cachedDetail.toDomain()
         }
         
-        // If not cached, load from assets and cache it
         try {
             val jsonString = context.assets.open("satellites-detail.json")
                 .bufferedReader()
@@ -63,7 +59,6 @@ class SatelliteRepositoryImpl @Inject constructor(
             
             if (satelliteDetail != null) {
                 val domainModel = satelliteDetail.modelToDomain()
-                // Cache the data
                 satelliteDetailDao.insertSatelliteDetail(domainModel.toEntity())
                 return@withContext domainModel
             }
@@ -73,8 +68,7 @@ class SatelliteRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getSatellitePositions(satelliteId: Int): List<PositionDomainModel> = withContext(Dispatchers.IO) {
-        // Always load positions from assets (no caching)
+    override suspend fun getSatellitePositions(satelliteId: Int): List<PositionDomainModel> = withContext(ioDispatcher) {
         try {
             val jsonString = context.assets.open("positions.json")
                 .bufferedReader()

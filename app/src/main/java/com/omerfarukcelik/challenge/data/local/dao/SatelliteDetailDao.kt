@@ -2,7 +2,6 @@ package com.omerfarukcelik.challenge.data.local.dao
 
 import androidx.room.*
 import com.omerfarukcelik.challenge.data.local.entity.SatelliteDetailEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SatelliteDetailDao {

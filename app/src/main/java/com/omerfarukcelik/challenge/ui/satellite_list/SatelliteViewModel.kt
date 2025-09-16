@@ -22,29 +22,34 @@ class SatelliteViewModel @Inject constructor(
     private val getSatellitesUseCase: GetSatellitesUseCase
 ) : ViewModel() {
 
-    private val _allSatellites = MutableStateFlow<List<SatelliteUIModel>>(emptyList())
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    private val _satellitesStatus = MutableStateFlow<StatusIO<List<SatelliteUIModel>>>(StatusIO.Loading)
-    val satellitesStatus: StateFlow<StatusIO<List<SatelliteUIModel>>> = _satellitesStatus.asStateFlow()
-
-    val filteredSatellites: StateFlow<List<SatelliteUIModel>> = _searchQuery
+    private val _allSatellites = MutableStateFlow<List<SatelliteUIModel>>(emptyList())
+    private val _satelliteUIState = MutableStateFlow<SatelliteUIState>(SatelliteUIState.Loading)
+    
+    val satelliteUIState: StateFlow<SatelliteUIState> = _searchQuery
         .debounce(300)
         .distinctUntilChanged()
         .map { query ->
-            if (query.isEmpty()) {
-                _allSatellites.value
-            } else {
-                _allSatellites.value.filter { satellite ->
-                    satellite.name.contains(query, ignoreCase = true)
+            when (val currentState = _satelliteUIState.value) {
+                is SatelliteUIState.LoadData -> {
+                    val filteredSatellites = if (query.isEmpty()) {
+                        _allSatellites.value
+                    } else {
+                        _allSatellites.value.filter { satellite ->
+                            satellite.name.contains(query, ignoreCase = true)
+                        }
+                    }
+                    SatelliteUIState.LoadData(filteredSatellites)
                 }
+                else -> currentState
             }
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
+            initialValue = _satelliteUIState.value
         )
 
     init {
@@ -53,18 +58,18 @@ class SatelliteViewModel @Inject constructor(
 
     private fun loadSatellites() {
         viewModelScope.launch {
-            _satellitesStatus.value = StatusIO.Loading
+            _satelliteUIState.value = SatelliteUIState.Loading
             try {
                 val satellitesList = getSatellitesUseCase()
                 val uiModels = satellitesList.toUIModel()
                 _allSatellites.value = uiModels
-                _satellitesStatus.value = if (uiModels.isEmpty()) {
-                    StatusIO.Empty
+                _satelliteUIState.value = if (uiModels.isEmpty()) {
+                    SatelliteUIState.Empty
                 } else {
-                    StatusIO.Success(uiModels)
+                    SatelliteUIState.LoadData(uiModels)
                 }
             } catch (e: Exception) {
-                _satellitesStatus.value = StatusIO.Error(e)
+                _satelliteUIState.value = SatelliteUIState.Error(e)
             }
         }
     }

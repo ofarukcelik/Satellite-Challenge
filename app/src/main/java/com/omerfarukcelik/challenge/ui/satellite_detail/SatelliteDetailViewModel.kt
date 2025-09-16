@@ -18,24 +18,23 @@ class SatelliteDetailViewModel @Inject constructor(
     private val getSatelliteDetailUseCase: GetSatelliteDetailUseCase,
     private val getSatellitePositionsUseCase: GetSatellitePositionsUseCase
 ) : ViewModel() {
-    
+
     private val _uiState = MutableStateFlow<SatelliteDetailUIState>(SatelliteDetailUIState.Loading)
     val uiState: StateFlow<SatelliteDetailUIState> = _uiState.asStateFlow()
-    
+
     private val _currentPosition = MutableStateFlow<PositionDomainModel?>(null)
     val currentPosition: StateFlow<PositionDomainModel?> = _currentPosition.asStateFlow()
-    
+
     fun loadSatelliteDetail(satelliteId: Int) {
         viewModelScope.launch {
             _uiState.value = SatelliteDetailUIState.Loading
             try {
                 val satelliteDetail = getSatelliteDetailUseCase(satelliteId)
-                
+
                 if (satelliteDetail != null) {
                     val uiModel = satelliteDetail.toUIModel()
                     _uiState.value = SatelliteDetailUIState.Success(uiModel)
-                    
-                    // Start position updates
+
                     startPositionUpdates(satelliteId)
                 } else {
                     _uiState.value = SatelliteDetailUIState.Error("Satellite not found")
@@ -45,22 +44,14 @@ class SatelliteDetailViewModel @Inject constructor(
             }
         }
     }
-    
+
     private fun startPositionUpdates(satelliteId: Int) {
         viewModelScope.launch {
-            getSatellitePositionsUseCase(satelliteId)
-                .catch { e ->
-                    // Handle error if needed
-                }
-                .collect { position ->
-                    _currentPosition.value = position
-                }
+            getSatellitePositionsUseCase(satelliteId).catch { e ->
+                // error
+            }.collect { position ->
+                _currentPosition.value = position
+            }
         }
     }
-}
-
-sealed class SatelliteDetailUIState {
-    object Loading : SatelliteDetailUIState()
-    data class Success(val data: SatelliteDetailUIModel) : SatelliteDetailUIState()
-    data class Error(val message: String) : SatelliteDetailUIState()
 }

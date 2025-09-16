@@ -6,8 +6,7 @@ data class SatelliteDetailUIModel(
     val id: Int,
     val name: String,
     val heightMass: String,
-    val cost: String,
-    val lastPosition: String
+    val cost: String
 )
 
 fun SatelliteDetailDomainModel.toUIModel(): SatelliteDetailUIModel {
@@ -15,7 +14,6 @@ fun SatelliteDetailDomainModel.toUIModel(): SatelliteDetailUIModel {
         id = this.id,
         name = this.name,
         heightMass = "${this.height}/${this.mass}",
-        cost = this.costPerLaunch.toString(),
-        lastPosition = "(0.864328541,0.646450811)" // Hardcoded as requested
+        cost = this.costPerLaunch.toString()
     )
 }
