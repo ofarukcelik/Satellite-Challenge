@@ -1,4 +1,4 @@
-package com.omerfarukcelik.challenge.navigation
+package com.omerfarukcelik.challenge.ui.navigation
 
 object SatelliteRoutes {
     const val SATELLITE_LIST = "satellite_list"

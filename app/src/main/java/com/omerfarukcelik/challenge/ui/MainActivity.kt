@@ -18,7 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.omerfarukcelik.challenge.navigation.SatelliteRoutes
+import com.omerfarukcelik.challenge.ui.navigation.SatelliteRoutes
 import com.omerfarukcelik.challenge.ui.satellite_detail.SatelliteDetailScreen
 import com.omerfarukcelik.challenge.ui.satellite_list.SatelliteListScreen
 import com.omerfarukcelik.challenge.ui.theme.ChallengeTheme
