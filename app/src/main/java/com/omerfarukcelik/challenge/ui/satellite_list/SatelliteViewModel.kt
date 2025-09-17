@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -28,11 +29,9 @@ class SatelliteViewModel @Inject constructor(
     private val _allSatellites = MutableStateFlow<List<SatelliteUIModel>>(emptyList())
     private val _satelliteUIState = MutableStateFlow<SatelliteUIState>(SatelliteUIState.Loading)
 
-    val satelliteUIState: StateFlow<SatelliteUIState> = _searchQuery
-        .debounce(300)
-        .distinctUntilChanged()
-        .map { query ->
-            when (val currentState = _satelliteUIState.value) {
+    val satelliteUIState: StateFlow<SatelliteUIState> = _satelliteUIState
+        .combine(_searchQuery.debounce(300).distinctUntilChanged()) { state, query ->
+            when (state) {
                 is SatelliteUIState.LoadData -> {
                     val filteredSatellites = if (query.isEmpty()) {
                         _allSatellites.value
@@ -43,8 +42,7 @@ class SatelliteViewModel @Inject constructor(
                     }
                     SatelliteUIState.LoadData(filteredSatellites)
                 }
-
-                else -> currentState
+                else -> state
             }
         }
         .stateIn(
