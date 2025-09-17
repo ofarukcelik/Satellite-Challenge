@@ -3,6 +3,7 @@ package com.omerfarukcelik.challenge.ui.satellite_list
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -27,12 +28,15 @@ fun SatelliteListScreen(
     val satelliteUIState by viewModel.satelliteUIState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.loadSatellites()
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Search Bar
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { query ->
@@ -52,23 +56,37 @@ fun SatelliteListScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         when (val currentState = satelliteUIState) {
-            is SatelliteUIState.Loading -> { LoadingState() }
+            is SatelliteUIState.Loading -> {
+                LoadingState()
+            }
 
-            is SatelliteUIState.Error -> { ErrorState() }
+            is SatelliteUIState.Error -> {
+                ErrorState()
+            }
 
-            is SatelliteUIState.Empty -> { EmptyState(searchQuery = searchQuery) }
+            is SatelliteUIState.Empty -> {
+                EmptyState(searchQuery = searchQuery)
+            }
 
             is SatelliteUIState.LoadData -> {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(0.dp)
-                    ) {
-                        items(currentState.satellites) { satellite ->
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
+                ) {
+                    items(currentState.satellites) { satellite ->
+                        Column {
                             SatelliteListItem(
                                 satellite = satellite,
                                 onClick = { onSatelliteClick(satellite.id) }
                             )
+
+                            if (currentState.satellites.last() != satellite) {
+                                HorizontalDivider(
+                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                )
+                            }
                         }
                     }
+                }
             }
         }
     }
@@ -96,7 +114,8 @@ private fun ErrorState() {
             Text(
                 text = "Bir hata oluştu. Lütfen tekrar deneyin.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
         }
     }
@@ -120,43 +139,36 @@ fun SatelliteListItem(
     satellite: SatelliteUIModel,
     onClick: () -> Unit
 ) {
-    Column {
-        Row(
+    val alpha = if (satellite.active) 1f else 0.3f
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onClick() }
-                .padding(vertical = 12.dp, horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Status indicator dot
-            Box(
-                modifier = Modifier
-                    .size(12.dp)
-                    .clip(CircleShape)
-                    .background(Color(satellite.statusColor))
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Satellite info
-            Column {
-                Text(
-                    text = satellite.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = satellite.statusText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        // Divider line
-        HorizontalDivider(
-            modifier = Modifier.padding(start = 44.dp),
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                .size(12.dp)
+                .clip(CircleShape)
+                .background(Color(satellite.statusColor))
         )
+
+        Spacer(modifier = Modifier.width(32.dp))
+
+        Column {
+            Text(
+                text = satellite.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha)
+            )
+            Text(
+                text = satellite.statusText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha)
+            )
+        }
     }
 }

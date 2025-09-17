@@ -16,11 +16,11 @@ fun SatelliteDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val currentPosition by viewModel.currentPosition.collectAsState()
-    
+
     LaunchedEffect(satelliteId) {
         viewModel.loadSatelliteDetail(satelliteId)
     }
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -32,12 +32,12 @@ fun SatelliteDetailScreen(
             is SatelliteDetailUIState.Loading -> {
                 CircularProgressIndicator()
             }
+
             is SatelliteDetailUIState.Success -> {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Satellite Name
                     Text(
                         text = currentState.data.name,
                         style = MaterialTheme.typography.headlineLarge,
@@ -45,8 +45,7 @@ fun SatelliteDetailScreen(
                     )
 
                     Spacer(modifier = Modifier.height(32.dp))
-                    
-                    // Height/Mass
+
                     Text(
                         text = "Height/Mass:${currentState.data.heightMass}",
                         style = MaterialTheme.typography.bodyLarge
@@ -54,7 +53,6 @@ fun SatelliteDetailScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Cost
                     Text(
                         text = "Cost:${currentState.data.cost}",
                         style = MaterialTheme.typography.bodyLarge
@@ -62,13 +60,13 @@ fun SatelliteDetailScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Last Position
                     Text(
                         text = "Last Position: ${currentPosition?.let { "(${it.posX},${it.posY})" } ?: "Loading..."}",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
+
             is SatelliteDetailUIState.Error -> {
                 Text(
                     text = "Error loading satellite",

@@ -16,7 +16,7 @@ fun SatelliteDomainModel.toUIModel(): SatelliteUIModel {
         active = this.active,
         name = this.name,
         statusText = if (this.active) "Active" else "Passive",
-        statusColor = if (this.active) 0xFF4CAF50 else 0xFFF44336
+        statusColor = if (this.active) 0xFF00FF00 else 0xFFFF0000
     )
 }
 

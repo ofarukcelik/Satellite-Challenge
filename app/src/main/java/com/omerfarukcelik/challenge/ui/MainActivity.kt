@@ -37,23 +37,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentRoute = navBackStackEntry?.destination?.route
-                    
+
                     Scaffold(
-                        modifier = Modifier.fillMaxSize(),
-                        topBar = {
-                            TopAppBar(
-                                title = { 
-                                    Text(
-                                        when {
-                                            currentRoute?.startsWith("satellite_detail") == true -> "Satellite Detail"
-                                            else -> "Satellites"
-                                        }
-                                    )
-                                }
-                            )
-                        }
+                        modifier = Modifier.fillMaxSize()
                     ) { innerPadding ->
                         NavHost(
                             navController = navController,
@@ -69,9 +55,10 @@ class MainActivity : ComponentActivity() {
                                     }
                                 )
                             }
-                            
+
                             composable(SatelliteRoutes.SATELLITE_DETAIL) { backStackEntry ->
-                                val satelliteId = backStackEntry.arguments?.getString("satelliteId")?.toIntOrNull() ?: 0
+                                val satelliteId = backStackEntry.arguments?.getString("satelliteId")
+                                    ?.toIntOrNull() ?: 0
                                 SatelliteDetailScreen(satelliteId = satelliteId)
                             }
                         }

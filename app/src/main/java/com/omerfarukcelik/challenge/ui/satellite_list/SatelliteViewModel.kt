@@ -27,7 +27,7 @@ class SatelliteViewModel @Inject constructor(
 
     private val _allSatellites = MutableStateFlow<List<SatelliteUIModel>>(emptyList())
     private val _satelliteUIState = MutableStateFlow<SatelliteUIState>(SatelliteUIState.Loading)
-    
+
     val satelliteUIState: StateFlow<SatelliteUIState> = _searchQuery
         .debounce(300)
         .distinctUntilChanged()
@@ -43,6 +43,7 @@ class SatelliteViewModel @Inject constructor(
                     }
                     SatelliteUIState.LoadData(filteredSatellites)
                 }
+
                 else -> currentState
             }
         }
@@ -52,11 +53,8 @@ class SatelliteViewModel @Inject constructor(
             initialValue = _satelliteUIState.value
         )
 
-    init {
-        loadSatellites()
-    }
 
-    private fun loadSatellites() {
+    fun loadSatellites() {
         viewModelScope.launch {
             _satelliteUIState.value = SatelliteUIState.Loading
             try {
