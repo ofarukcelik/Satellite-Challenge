@@ -332,8 +332,11 @@ cd Challenge
 ```
 
 ## 📱 Screenshots
-![Screenshot_20250917_135332.png](../../Downloads/Screenshot_20250917_135332.png)
-![Screenshot_20250917_135403.png](../../Downloads/Screenshot_20250917_135403.png)
+Screen Recording : [Screen_recording_20250917_135431.webm](https://github.com/user-attachments/assets/73d68474-244f-4d9d-b7d2-5cb7f6a5e99d)
+
+<img width="1000" height="1300" alt="Screenshot_20250917_135403" src="https://github.com/user-attachments/assets/c01dc8ff-5bd6-42c2-931b-08498dec00b3" />
+<img width="1000" height="1300" alt="Screenshot_20250917_135332" src="https://github.com/user-attachments/assets/b10f18b1-9a36-4d8f-b08d-5295f31b980d" />
+
 
 ### Satellite List Screen
 - **Search Functionality**: Real-time search with debouncing
