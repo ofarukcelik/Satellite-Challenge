@@ -4,7 +4,7 @@ A comprehensive Android application demonstrating **Clean Architecture**, **Mode
 
 ## 🎯 Overview
 
-This project showcases a **Senior Plus level** Android development approach with:
+This project showcases a **Senior level** Android development approach with:
 
 - **Clean Architecture** with proper layer separation
 - **Modern UI** with Jetpack Compose
