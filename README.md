@@ -2,20 +2,6 @@
 
 A comprehensive Android application demonstrating **Clean Architecture**, **Modern Android Development**, and for satellite tracking and management.
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Tech Stack](#tech-stack)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Clean Architecture Implementation](#clean-architecture-implementation)
-- [Testing Strategy](#testing-strategy)
-- [Key Technical Decisions](#key-technical-decisions)
-- [Performance Optimizations](#performance-optimizations)
-- [Setup & Installation](#setup--installation)
-- [Screenshots](#screenshots)
-
 ## 🎯 Overview
 
 This project showcases a **Senior Plus level** Android development approach with:
